@@ -3,6 +3,27 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.wjk.tutuo1.mapper.AttrMapper">
+    <update id="update">
+        update attr
+        <set>
+            <if test=" content != null and content !=''">
+                content = #{content}
+            </if>
+            <if test=" shape != null and shape !=''">
+                shape = #{shape}
+            </if>
+            <if test=" category != null and category !=''">
+                category = #{category}
+            </if>
+            <if test=" feature != null and feature !=''">
+                feature = #{feature}
+            </if>
+            <if test=" image != null and image !=''">
+                image = #{image}
+            </if>
+        </set>
+        where id = #{id}
+    </update>
     <!--条件查询-->
     <select id="list" resultType="com.wjk.tutuo1.pojo.Attr">
         select *
@@ -11,11 +32,14 @@
             <if test="shape != null and shape != ''">
                 shape = #{shape}
             </if>
-            <if test="category != null">
+            <if test="category != null and category != ''">
                 and category = #{category}
             </if>
-            <if test="function != null and function != null">
-                and function = #{function}
+            <if test="feature != null and feature != null">
+                and feature = #{feature}
+            </if>
+            <if test="image != null and image != null">
+                and image = #{image}
             </if>
         </where>
     </select>
