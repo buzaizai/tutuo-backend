@@ -22,5 +22,5 @@ aliyun:
   oss:
     endpoint: https://oss-cn-hangzhou.aliyuncs.com
     accessKeyId: LTAI5tEijDcL6YSVDCNjapPD
-    accessKeySecret: uCDcfe5M3eKHaU7vYSholOUTQE0KdS
+    accessKeySecret: secret
     bucketName: 1kunkun1
