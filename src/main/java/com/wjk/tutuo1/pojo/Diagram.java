@@ -24,5 +24,9 @@ public class Diagram {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private LocalDateTime updateTime;
     private Long a;
+    private String paintingDescribe;
+    private String dataStructure;
+    private String mermaidCode;
+    private String mermaidImg;
 
 }

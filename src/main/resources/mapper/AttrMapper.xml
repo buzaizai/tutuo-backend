@@ -36,7 +36,7 @@
                 and category = #{category}
             </if>
             <if test="feature != null and feature != null">
-                and feature = #{feature}
+                and feature like concat('%', #{feature}, '%')
             </if>
             <if test="image != null and image != null">
                 and image = #{image}
