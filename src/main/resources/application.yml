@@ -24,3 +24,12 @@ aliyun:
     accessKeyId: LTAI5tEijDcL6YSVDCNjapPD
     accessKeySecret: uCDcfe5M3eKHaU7vYSholOUTQE0KdS
     bucketName: 1kunkun1
+
+server:
+  port: 443
+  ssl:
+    key-store: classpath:certificate.jks
+    key-store-password: b58a52
+    key-store-type: PKCS12
+
+
