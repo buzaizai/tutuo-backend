@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/tutuo?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://localhost:3306/tutuo
     username: root
     password: 1234
   mvc:
@@ -24,12 +24,3 @@ aliyun:
     accessKeyId: LTAI5tEijDcL6YSVDCNjapPD
     accessKeySecret: uCDcfe5M3eKHaU7vYSholOUTQE0KdS
     bucketName: 1kunkun1
-
-server:
-  port: 443
-  ssl:
-    key-store: classpath:certificate.jks
-    key-store-password: b58a52
-    key-store-type: PKCS12
-
-
