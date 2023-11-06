@@ -10,4 +10,6 @@ public interface DiagramService {
      void add(Diagram diagram);
 
      void update(Diagram diagram);
+
+    boolean ifexist(String title);
 }

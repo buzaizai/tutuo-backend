@@ -2,13 +2,14 @@ package com.wjk.tutuo1.pojo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 
-
+@Builder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

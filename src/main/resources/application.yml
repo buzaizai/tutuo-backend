@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/tutuo?useSSL=false&serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8
+    url: jdbc:mysql://localhost:3306/tutuo?useSSL=false&serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8&&allowPublicKeyRetrieval=true
     username: root
     password: 1234
   mvc:

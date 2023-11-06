@@ -33,4 +33,12 @@ public class DiagramServiceImpl  implements DiagramService {
         diagramMapper.update(diagram);
     }
 
+    @Override
+    public boolean ifexist(String title) {
+        if (diagramMapper.ifexist(title) != null) {
+            return true;
+        }
+        return false;
+    }
+
 }
