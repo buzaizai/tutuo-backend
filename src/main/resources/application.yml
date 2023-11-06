@@ -1,6 +1,6 @@
 spring:
   datasource:
-    driver-class-name: com.mysql.jdbc.Driver
+    driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/tutuo?useSSL=false&serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8&&allowPublicKeyRetrieval=true
     username: root
     password: 1234
@@ -31,3 +31,4 @@ server:
     key-store-type: PKCS12
     key-store-password: b58a52
   port: 443
+

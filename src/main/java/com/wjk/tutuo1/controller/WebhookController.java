@@ -7,23 +7,23 @@ import com.wjk.tutuo1.pojo.Webhook;
 import com.wjk.tutuo1.service.AttrService;
 import com.wjk.tutuo1.service.DiagramService;
 import com.wjk.tutuo1.utils.MarkdownUtils;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.swing.text.html.parser.Parser;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+@CrossOrigin(origins = "https://yuque.com", methods = RequestMethod.POST)
 @RestController
 public class WebhookController {
     @Autowired
     private DiagramService diagramService;
     @Autowired
     private AttrService attrService;
+
     @PostMapping("/hook")
     public Result ReceiveMessage(@RequestBody Map<String, Map<String, Object>> mapMap) {
         Map<String, Object> map = mapMap.get("data");
@@ -54,7 +54,8 @@ public class WebhookController {
                     .renderingData(index[10]).extendingData(index[11])
                     .build();
             diagramService.add(diagram);
-        };
+        }
+        ;
         return Result.success(id);
     }
 }
