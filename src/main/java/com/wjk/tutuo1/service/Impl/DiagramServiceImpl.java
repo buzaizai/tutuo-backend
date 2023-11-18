@@ -35,10 +35,18 @@ public class DiagramServiceImpl  implements DiagramService {
 
     @Override
     public boolean ifexist(String title) {
-        if (diagramMapper.ifexist(title) != null) {
-            return true;
-        }
-        return false;
+        List<Diagram> diagrams = diagramMapper.ifexist(title);
+        return !diagrams.isEmpty();
+    }
+
+    @Override
+    public Long getA(String title) {
+        return diagramMapper.getA(title);
+    }
+
+    @Override
+    public Long getId(String title) {
+        return diagramMapper.getId(title);
     }
 
 }

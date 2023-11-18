@@ -7,16 +7,16 @@
         update attr
         <set>
             <if test=" content != null and content !=''">
-                content = #{content}
+                content = #{content},
             </if>
             <if test=" shape != null and shape !=''">
-                shape = #{shape}
+                shape = #{shape},
             </if>
             <if test=" category != null and category !=''">
-                category = #{category}
+                category = #{category},
             </if>
             <if test=" feature != null and feature !=''">
-                feature = #{feature}
+                feature = #{feature},
             </if>
             <if test=" image != null and image !=''">
                 image = #{image}

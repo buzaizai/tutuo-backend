@@ -13,9 +13,7 @@ import org.commonmark.renderer.html.AttributeProviderFactory; // 注释9
 import org.commonmark.renderer.html.HtmlRenderer; // 注释10
 
 
-/**
- * Created by limi on 2017/10/22.
- */
+
 public class MarkdownUtils {
 
     /*
@@ -24,7 +22,7 @@ public class MarkdownUtils {
     public static boolean found(String title){
         String[] tt = {"基本信息介绍","图表属性","图表分析","元素构成","适用场景","不适用场景",
                 "绘制","描述","数据结构描述","Mermaid代码","数据结构示例",
-                "Mermaid效果图","渲染数据","拓展数据"};
+                "Mermaid效果图","渲染数据","拓展数据","Echarts代码","Echarts效果图"};
         for(String str:tt){
             if(title.equals(str)){
                 return true;
@@ -54,6 +52,7 @@ public class MarkdownUtils {
                 stringBuilder.append("```").append(((FencedCodeBlock) child).getLiteral()).append("```").append("\n");
             } else if (child instanceof Image) {
                 stringBuilder.append("~").append("<img src=\"").append(((Image) child).getDestination()).append("\">").append("~");
+                System.out.println(child);
             }
             printChildren(child,stringBuilder); // 递归输出子节点的子节点
             child = child.getNext(); // 指向下一个子节点

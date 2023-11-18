@@ -7,7 +7,7 @@ import java.util.List;
 
 @Mapper
 public interface DiagramMapper {
-    @Select("select * from diagram where id=#{id}")
+    @Select("select * from diagram where a=#{id}")
     List<Diagram> post(Integer id);
     @Delete("delete from diagram where a = #{id}")
     void delete(Integer id);
@@ -21,4 +21,9 @@ public interface DiagramMapper {
 
     @Select("select * from diagram where name=#{title}")
     List<Diagram> ifexist(String title);
+
+    @Select("select id from diagram where name=#{title}")
+    Long getA(String title);
+    @Select("select a from diagram where name=#{title}")
+    Long getId(String title);
 }

@@ -12,4 +12,8 @@ public interface DiagramService {
      void update(Diagram diagram);
 
     boolean ifexist(String title);
+
+    Long getA(String title);
+
+    Long getId(String title);
 }
