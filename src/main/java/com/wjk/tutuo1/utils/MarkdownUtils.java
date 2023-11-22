@@ -1,7 +1,16 @@
 package com.wjk.tutuo1.utils;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.regex.*;
-import org.commonmark.Extension;
+
+import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.util.IdUtil;
+import cn.hutool.http.HttpUtil;
 import org.commonmark.ext.gfm.tables.TableBlock; // 注释1
 import org.commonmark.ext.gfm.tables.TablesExtension; // 注释2
 import org.commonmark.ext.heading.anchor.HeadingAnchorExtension; // 注释3
@@ -11,10 +20,17 @@ import org.commonmark.renderer.html.AttributeProvider; // 注释7
 import org.commonmark.renderer.html.AttributeProviderContext; // 注释8
 import org.commonmark.renderer.html.AttributeProviderFactory; // 注释9
 import org.commonmark.renderer.html.HtmlRenderer; // 注释10
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 
-
+@Component
 public class MarkdownUtils {
+
+    @Autowired
+    private AliOSSUtils aliOSSUtils;
 
     /*
     * 去除标题
@@ -34,14 +50,14 @@ public class MarkdownUtils {
     /*
     * 解析markdown为节点
     * */
-    public static void markdownToHtml(String markdown,StringBuilder stringBuilder) {
+    public void markdownToHtml(String markdown,StringBuilder stringBuilder) {
         Parser parser = Parser.builder().build(); // 创建解析器实例 // 注释12
         Node document = parser.parse(markdown); // 解析Markdown文本为节点树 // 注释13
         printChildren(document,stringBuilder);
     }
 
 
-    public static void printChildren(Node node,StringBuilder stringBuilder) {
+    public  void printChildren(Node node,StringBuilder stringBuilder) {
         Node child = node.getFirstChild();
         while (child != null) {
             if(child instanceof IndentedCodeBlock){
@@ -51,8 +67,9 @@ public class MarkdownUtils {
             } else if (child instanceof FencedCodeBlock) {
                 stringBuilder.append("```").append(((FencedCodeBlock) child).getLiteral()).append("```").append("\n");
             } else if (child instanceof Image) {
-                stringBuilder.append("~").append("<img src=\"").append(((Image) child).getDestination()).append("\">").append("~");
-                System.out.println(child);
+                String imageUrl = uploadImg(((Image) child).getDestination());
+                stringBuilder.append("~").append("<img src=\"").append(imageUrl).append("\">").append("~");
+                System.out.println(imageUrl);
             }
             printChildren(child,stringBuilder); // 递归输出子节点的子节点
             child = child.getNext(); // 指向下一个子节点
@@ -66,7 +83,7 @@ public class MarkdownUtils {
             String imageUrl = matcher.group(1);
             result = imageUrl;
         }
-        return result;
+        return uploadImg(result);
     }
 
     public  String[] analyse(String input) {
@@ -136,4 +153,32 @@ public class MarkdownUtils {
         return result1;
 //        System.out.println(result1[10]);//基本信息、属性（忽略）、元素构成、适用场景、不适用场景、描述、数据结构描述、效果图、数据结构、mermaid、渲染数据、拓展数据、形状、图形、功能
     }
+
+    private String uploadImg(String url) {
+//        String fileType = url.substring(url.lastIndexOf("."), url.lastIndexOf("#"));
+        String ClassPath = new Object() {
+            public String getPath() {
+                return this.getClass().getResource("/").getPath();
+            }
+        }.getPath().substring(1);
+        String filename = IdUtil.simpleUUID() + ".jpg";
+        HttpUtil.downloadFile(url, FileUtil.file(ClassPath + filename));
+        Path path = Paths.get(ClassPath + filename);
+        File file = new File(path.toUri());
+        FileInputStream fileInputStream = null;
+        try {
+            fileInputStream = new FileInputStream(file);
+            MultipartFile multipartFile = new MockMultipartFile(file.getName(), fileInputStream);
+            String ossUrl = aliOSSUtils.upload(multipartFile);
+            file.delete();
+            return ossUrl;
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+
 }

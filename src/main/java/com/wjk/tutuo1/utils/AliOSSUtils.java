@@ -17,7 +17,7 @@ public class AliOSSUtils {
         InputStream inputStream = multipartFile.getInputStream();
 // 避免文件覆盖
         String originalFilename =
-                multipartFile.getOriginalFilename();
+                multipartFile.getName();
         String fileName = UUID.randomUUID().toString() +
                 originalFilename.substring(originalFilename.lastIndexOf("."));
 //上传文件到 OSS
