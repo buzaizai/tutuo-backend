@@ -156,12 +156,20 @@ public class MarkdownUtils {
 
     private String uploadImg(String url) {
 //        String fileType = url.substring(url.lastIndexOf("."), url.lastIndexOf("#"));
+        String fileType = "jpg";
+        String[] fileTypes = new String[]{"jpeg", "jpg", "img", "svg", "png"};
+        for (String type : fileTypes) {
+            if (url.contains(type)) {
+                fileType = type;
+                break;
+            }
+        }
         String ClassPath = new Object() {
             public String getPath() {
                 return this.getClass().getResource("/").getPath();
             }
         }.getPath().substring(1);
-        String filename = IdUtil.simpleUUID() + ".jpg";
+        String filename = IdUtil.simpleUUID() + "." + fileType;
         HttpUtil.downloadFile(url, FileUtil.file(ClassPath + filename));
         Path path = Paths.get(ClassPath + filename);
         File file = new File(path.toUri());
