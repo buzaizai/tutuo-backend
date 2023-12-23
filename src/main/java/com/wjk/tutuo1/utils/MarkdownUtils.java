@@ -111,7 +111,7 @@ public class MarkdownUtils {
         StringBuilder sb = new StringBuilder();
         String[] regexs = {"·(.*?)·", "~(.*?)~", "```(.*?)```", "形状[: ：](.*?)~\\n", "图类[: ：](.*?)~\\n", "功能[: ：](.*?)~\\n","(?<=tdhed0)([^t]*(?:t(?!dhed0)[^t]*)*)(?=tdhed0)","<img\\s+src\\s*=\\s*\"([^\"]+)\""};
         Pattern[] patterns = {Pattern.compile(regexs[0],Pattern.DOTALL), Pattern.compile(regexs[1],Pattern.DOTALL), Pattern.compile(regexs[2],Pattern.DOTALL), Pattern.compile(regexs[3],Pattern.DOTALL), Pattern.compile(regexs[4],Pattern.DOTALL), Pattern.compile(regexs[5],Pattern.DOTALL), Pattern.compile(regexs[6]),Pattern.compile(regexs[7])};
-        Matcher[] matchers = {patterns[0].matcher(stringBuilder), patterns[1].matcher(stringBuilder),patterns[2].matcher(stringBuilder), patterns[3].matcher(stringBuilder), patterns[4].matcher(stringBuilder), patterns[5].matcher(stringBuilder),patterns[6].matcher(sb),patterns[7].matcher(result1[3]),patterns[7].matcher(result1[8])};
+        Matcher[]  matchers = new Matcher[]{patterns[0].matcher(stringBuilder), patterns[1].matcher(stringBuilder), patterns[2].matcher(stringBuilder), patterns[3].matcher(stringBuilder), patterns[4].matcher(stringBuilder), patterns[5].matcher(stringBuilder)};
         while (matchers[0].find()) {
             String content = matchers[0].group(1);
             sb.append(content).append("\n");
@@ -127,11 +127,12 @@ public class MarkdownUtils {
             sb.append(content).append("\n");
         }
         int i =0;
-        while (matchers[6].find()){
-            String result = matchers[6].group(1);
-            if (!result.trim().isEmpty()||result.equals("\n \n")) {
+        Matcher matchers6= patterns[6].matcher(sb);
+        while (matchers6.find()){
+            String result = matchers6.group(1);
+            if (!result.trim().isEmpty()|| "\n \n".equals(result)) {
                 if (!result.trim().isEmpty()) {
-                    result1[i++] = matchers[6].group().trim();
+                    result1[i++] = matchers6.group().trim();
                 } else {
                     result1[i++] = " ";
                 }
@@ -143,59 +144,15 @@ public class MarkdownUtils {
                 result1[i++]=content;
             }
         }
-        for(int j = 7;j<=8;j++){
+        matchers = new Matcher[]{patterns[7].matcher(result1[3]), patterns[7].matcher(result1[8])};
+
+        for(int j = 0;j<=1;j++){
             if (matchers[j].find()) {
                 result1[3] = matchers[j].group(1);
             }
         }
 //        System.out.println(Arrays.toString(result1));
         return result1;
-    }
-
-    private void processMatches(String[] result, StringBuilder input, String regex, int index) {
-        Pattern pattern = Pattern.compile(regex, Pattern.DOTALL);
-        Matcher matcher = pattern.matcher(input);
-
-        int i = 0;
-        while (matcher.find() && index + i < result.length) {
-            String content = matcher.group(1);
-            result[index + i++] = content.trim();
-        }
-    }
-
-    private void processMatchesAndPlaceholder(String[] result, StringBuilder input, String regex, String skipPattern, String placeholder, int index) {
-        Pattern pattern = Pattern.compile(regex, Pattern.DOTALL);
-        Matcher matcher = pattern.matcher(input);
-
-        int i = 0;
-        while (matcher.find() && index + i < result.length) {
-            String content = matcher.group(1);
-            if (skipPattern != null && content.matches(skipPattern)) {
-                continue;
-            } else if (placeholder != null && found(content)) {
-                result[index + i++] = placeholder;
-            } else {
-                result[index + i++] = content.trim();
-            }
-        }
-    }
-
-    private void processImageMatches(String[] result, String regex, int index1, int index2) {
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher7 = pattern.matcher(result[index1]);
-        Matcher matcher8 = pattern.matcher(result[index2]);
-
-        if (matcher7.find() && index1 < result.length) {
-            result[index1] = matcher7.group(1);
-        }
-
-        if (matcher8.find() && index2 < result.length) {
-            result[index2] = matcher8.group(1);
-        }
-    }
-
-    private void printResultArray(String[] result) {
-        System.out.println(Arrays.toString(result));
     }
 
     private String uploadImg(String url) {
