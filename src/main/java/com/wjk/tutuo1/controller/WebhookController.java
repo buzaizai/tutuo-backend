@@ -40,17 +40,17 @@ public class WebhookController {
             //System.out.println(index[i]);//基本信息、属性（忽略）、元素构成、适用场景、不适用场景、描述、数据结构描述、效果图、数据结构、mermaid、渲染数据、拓展数据、形状、图形、功能
         Long id = null;
         Attr attr = Attr.builder().content(title).createTime(LocalDateTime.now())
-                .updateTime(LocalDateTime.now()).shape(index[12]).image(imgUrl)
-                .category(index[13]).feature(index[14]).build();
+                .updateTime(LocalDateTime.now()).shape(index[13]).image(imgUrl)
+                .category(index[14]).feature(index[15]).build();
         if (!diagramService.ifexist(title)) {
             attrService.add(attr);
             id = attr.getId();
             Diagram diagram = Diagram.builder().a(id).name(title).intro(index[0])
-                    .img(imgUrl).element(index[2]).apply(index[3]).unapply(index[4])
+                    .img(imgUrl).element(index[2]).elementImg(index[3]).apply(index[4]).unapply(index[5])
                     .createTime(LocalDateTime.now()).updateTime(LocalDateTime.now())
-                    .paintingDescribe(index[5]).dataStructDescribe(index[6])
-                    .mermaidImg(index[7]).dataStructure(index[8]).mermaidCode(index[9])
-                    .renderingData(index[10]).extendingData(index[11])
+                    .paintingDescribe(index[6]).dataStructDescribe(index[7])
+                    .mermaidImg(index[8]).dataStructure(index[9]).mermaidCode(index[10])
+                    .renderingData(index[11]).extendingData(index[12])
                     .build();
             diagramService.add(diagram);
         }else {
@@ -58,15 +58,15 @@ public class WebhookController {
             Long a = diagramService.getId(title);
 //            System.out.println(Id);
             Attr updateAttr = Attr.builder().content(title).createTime(LocalDateTime.now())
-                    .updateTime(LocalDateTime.now()).shape(index[12]).image(imgUrl)
-                    .category(index[13]).feature(index[14]).id(a).build();
+                    .updateTime(LocalDateTime.now()).shape(index[13]).image(imgUrl)
+                    .category(index[14]).feature(index[15]).id(a).build();
             attrService.update(updateAttr);
             Diagram diagram = Diagram.builder().name(title).intro(index[0])
-                    .img(imgUrl).element(index[2]).apply(index[3]).unapply(index[4])
+                    .img(imgUrl).element(index[2]).apply(index[4]).unapply(index[5])
                     .createTime(LocalDateTime.now()).updateTime(LocalDateTime.now())
-                    .paintingDescribe(index[5]).dataStructDescribe(index[6])
-                    .mermaidImg(index[7]).dataStructure(index[8]).mermaidCode(index[9])
-                    .renderingData(index[10]).extendingData(index[11]).id(Id)
+                    .paintingDescribe(index[6]).dataStructDescribe(index[7])
+                    .mermaidImg(index[8]).elementImg(index[3]).dataStructure(index[9]).mermaidCode(index[10])
+                    .renderingData(index[11]).extendingData(index[12]).id(Id)
                     .build();
 //            System.out.println(diagram);
 

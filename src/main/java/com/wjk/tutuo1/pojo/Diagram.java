@@ -18,6 +18,7 @@ public class Diagram {
     private String img;
     private String intro;
     private String element;
+    private String elementImg;
     private String apply;
     private String unapply;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")

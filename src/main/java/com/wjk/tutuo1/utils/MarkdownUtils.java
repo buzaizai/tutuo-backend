@@ -4,13 +4,16 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.regex.*;
 
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.http.HttpUtil;
+import org.apache.commons.io.FileUtils;
 import org.commonmark.ext.gfm.tables.TableBlock; // 注释1
 import org.commonmark.ext.gfm.tables.TablesExtension; // 注释2
 import org.commonmark.ext.heading.anchor.HeadingAnchorExtension; // 注释3
@@ -38,7 +41,7 @@ public class MarkdownUtils {
     public static boolean found(String title){
         String[] tt = {"基本信息介绍","图表属性","图表分析","元素构成","适用场景","不适用场景",
                 "绘制","描述","数据结构描述","Mermaid代码","数据结构示例",
-                "Mermaid效果图","渲染数据","拓展数据","Echarts代码","Echarts效果图"};
+                "Mermaid效果图","渲染数据","拓展数据","Echarts代码","Echarts效果图","元素构成图"};
         for(String str:tt){
             if(title.equals(str)){
                 return true;
@@ -51,8 +54,8 @@ public class MarkdownUtils {
     * 解析markdown为节点
     * */
     public void markdownToHtml(String markdown,StringBuilder stringBuilder) {
-        Parser parser = Parser.builder().build(); // 创建解析器实例 // 注释12
-        Node document = parser.parse(markdown); // 解析Markdown文本为节点树 // 注释13
+        Parser parser = Parser.builder().build(); // 创建解析器实例
+        Node document = parser.parse(markdown); // 解析Markdown文本为节点树
         printChildren(document,stringBuilder);
     }
 
@@ -61,11 +64,24 @@ public class MarkdownUtils {
         Node child = node.getFirstChild();
         while (child != null) {
             if(child instanceof IndentedCodeBlock){
-                stringBuilder.append("·").append(((IndentedCodeBlock) child).getLiteral()).append("·").append("\n");
+                if (((IndentedCodeBlock) child).getLiteral().equals("//")) {
+                    stringBuilder.append("·").append(" ").append("·").append("\n");
+                    continue;
+                } else {
+                    stringBuilder.append("·").append(((IndentedCodeBlock) child).getLiteral()).append("·").append("\n");
+                }
             } else if (child instanceof Text) {
-                stringBuilder.append("~").append(((Text) child).getLiteral()).append("~").append("\n");
+                if (((Text) child).getLiteral().equals("//")) {
+                    stringBuilder.append("~").append(" ").append("~").append("\n");
+                } else {
+                    stringBuilder.append("~").append(((Text) child).getLiteral()).append("~").append("\n");
+                }
             } else if (child instanceof FencedCodeBlock) {
-                stringBuilder.append("```").append(((FencedCodeBlock) child).getLiteral()).append("```").append("\n");
+                if (((FencedCodeBlock) child).getLiteral().equals("//\n")) {
+                    stringBuilder.append("```").append(" ").append("```").append("\n");
+                } else {
+                    stringBuilder.append("```").append(((FencedCodeBlock) child).getLiteral()).append("```").append("\n");
+                }
             } else if (child instanceof Image) {
                 String imageUrl = uploadImg(((Image) child).getDestination());
                 stringBuilder.append("~").append("<img src=\"").append(imageUrl).append("\">").append("~");
@@ -83,6 +99,7 @@ public class MarkdownUtils {
             String imageUrl = matcher.group(1);
             result = imageUrl;
         }
+        System.out.println("upload process");
         return uploadImg(result);
     }
 
@@ -90,32 +107,17 @@ public class MarkdownUtils {
         String[] result1 = new String[17];
         String a = input;
         StringBuilder stringBuilder = new StringBuilder();
-        markdownToHtml(a,stringBuilder); // 将示例字符串转换为HTML并输出 // 注释24
+        markdownToHtml(a,stringBuilder); // 将示例字符串转换为HTML并输出
         StringBuilder sb = new StringBuilder();
-        String regex1 = "·(.*?)·";
-        String regex2 = "~(.*?)~";
-        String regex3 = "```(.*?)```";
-        String regex4 = "形状[: ：](.*?)~\\n";
-        String regex5 = "图类[: ：](.*?)~\\n";
-        String regex6 = "功能[: ：](.*?)~\\n";
-        Pattern pattern1 = Pattern.compile(regex1,Pattern.DOTALL);
-        Pattern pattern2 = Pattern.compile(regex2,Pattern.DOTALL);
-        Pattern pattern3 = Pattern.compile(regex3,Pattern.DOTALL);
-        Pattern pattern4 = Pattern.compile(regex4,Pattern.DOTALL);
-        Pattern pattern5 = Pattern.compile(regex5,Pattern.DOTALL);
-        Pattern pattern6 = Pattern.compile(regex6,Pattern.DOTALL);
-        Matcher matcher1 = pattern1.matcher(stringBuilder);
-        Matcher matcher2 = pattern2.matcher(stringBuilder);
-        Matcher matcher3 = pattern3.matcher(stringBuilder);
-        Matcher matcher4 = pattern4.matcher(stringBuilder);
-        Matcher matcher5 = pattern5.matcher(stringBuilder);
-        Matcher matcher6 = pattern6.matcher(stringBuilder);
-        while (matcher1.find()) {
-            String content = matcher1.group(1);
+        String[] regexs = {"·(.*?)·", "~(.*?)~", "```(.*?)```", "形状[: ：](.*?)~\\n", "图类[: ：](.*?)~\\n", "功能[: ：](.*?)~\\n","(?<=tdhed0)([^t]*(?:t(?!dhed0)[^t]*)*)(?=tdhed0)","<img\\s+src\\s*=\\s*\"([^\"]+)\""};
+        Pattern[] patterns = {Pattern.compile(regexs[0],Pattern.DOTALL), Pattern.compile(regexs[1],Pattern.DOTALL), Pattern.compile(regexs[2],Pattern.DOTALL), Pattern.compile(regexs[3],Pattern.DOTALL), Pattern.compile(regexs[4],Pattern.DOTALL), Pattern.compile(regexs[5],Pattern.DOTALL), Pattern.compile(regexs[6]),Pattern.compile(regexs[7])};
+        Matcher[] matchers = {patterns[0].matcher(stringBuilder), patterns[1].matcher(stringBuilder),patterns[2].matcher(stringBuilder), patterns[3].matcher(stringBuilder), patterns[4].matcher(stringBuilder), patterns[5].matcher(stringBuilder),patterns[6].matcher(sb),patterns[7].matcher(result1[3]),patterns[7].matcher(result1[8])};
+        while (matchers[0].find()) {
+            String content = matchers[0].group(1);
             sb.append(content).append("\n");
         }
-        while (matcher2.find()) {
-            String content = matcher2.group(1);
+        while (matchers[1].find()) {
+            String content = matchers[1].group(1);
             if(content.matches("image\\..*")){
                 continue;
             } else if (found(content)){
@@ -124,38 +126,79 @@ public class MarkdownUtils {
             }
             sb.append(content).append("\n");
         }
-        String patternString = "(?<=tdhed0)([^t]*(?:t(?!dhed0)[^t]*)*)(?=tdhed0)";
-        Pattern pattern = Pattern.compile(patternString);
-        Matcher matcher = pattern.matcher(sb);
         int i =0;
-        while (matcher.find()){
-            String result = matcher.group(1);
-            if (!result.trim().isEmpty()) {
-                result1[i++]=matcher.group().trim();
+        while (matchers[6].find()){
+            String result = matchers[6].group(1);
+            if (!result.trim().isEmpty()||result.equals("\n \n")) {
+                if (!result.trim().isEmpty()) {
+                    result1[i++] = matchers[6].group().trim();
+                } else {
+                    result1[i++] = " ";
+                }
             }
         }
-        while (matcher3.find()) {
-            String content = matcher3.group(1);
-            result1[i++]=content;
+        for(int j =2;j<=5;j++){
+            while (matchers[j].find()) {
+                String content = matchers[j].group(1);
+                result1[i++]=content;
+            }
         }
-        while (matcher4.find()) {
-            String content = matcher4.group(1);
-            result1[i++]=content;
+        for(int j = 7;j<=8;j++){
+            if (matchers[j].find()) {
+                result1[3] = matchers[j].group(1);
+            }
         }
-        while (matcher5.find()) {
-            String content = matcher5.group(1);
-            result1[i++]=content;
-        }
-        while (matcher6.find()) {
-            String content = matcher6.group(1);
-            result1[i++]=content;
-        }
+//        System.out.println(Arrays.toString(result1));
         return result1;
-//        System.out.println(result1[10]);//基本信息、属性（忽略）、元素构成、适用场景、不适用场景、描述、数据结构描述、效果图、数据结构、mermaid、渲染数据、拓展数据、形状、图形、功能
+    }
+
+    private void processMatches(String[] result, StringBuilder input, String regex, int index) {
+        Pattern pattern = Pattern.compile(regex, Pattern.DOTALL);
+        Matcher matcher = pattern.matcher(input);
+
+        int i = 0;
+        while (matcher.find() && index + i < result.length) {
+            String content = matcher.group(1);
+            result[index + i++] = content.trim();
+        }
+    }
+
+    private void processMatchesAndPlaceholder(String[] result, StringBuilder input, String regex, String skipPattern, String placeholder, int index) {
+        Pattern pattern = Pattern.compile(regex, Pattern.DOTALL);
+        Matcher matcher = pattern.matcher(input);
+
+        int i = 0;
+        while (matcher.find() && index + i < result.length) {
+            String content = matcher.group(1);
+            if (skipPattern != null && content.matches(skipPattern)) {
+                continue;
+            } else if (placeholder != null && found(content)) {
+                result[index + i++] = placeholder;
+            } else {
+                result[index + i++] = content.trim();
+            }
+        }
+    }
+
+    private void processImageMatches(String[] result, String regex, int index1, int index2) {
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher7 = pattern.matcher(result[index1]);
+        Matcher matcher8 = pattern.matcher(result[index2]);
+
+        if (matcher7.find() && index1 < result.length) {
+            result[index1] = matcher7.group(1);
+        }
+
+        if (matcher8.find() && index2 < result.length) {
+            result[index2] = matcher8.group(1);
+        }
+    }
+
+    private void printResultArray(String[] result) {
+        System.out.println(Arrays.toString(result));
     }
 
     private String uploadImg(String url) {
-//        String fileType = url.substring(url.lastIndexOf("."), url.lastIndexOf("#"));
         String fileType = "jpg";
         String[] fileTypes = new String[]{"jpeg", "jpg", "img", "svg", "png"};
         for (String type : fileTypes) {
@@ -164,29 +207,18 @@ public class MarkdownUtils {
                 break;
             }
         }
-        String ClassPath = new Object() {
-            public String getPath() {
-                return this.getClass().getResource("/").getPath();
-            }
-        }.getPath().substring(1);
-        String filename = IdUtil.simpleUUID() + "." + fileType;
-        HttpUtil.downloadFile(url, FileUtil.file(ClassPath + filename));
-        Path path = Paths.get(ClassPath + filename);
-        File file = new File(path.toUri());
-        FileInputStream fileInputStream = null;
         try {
-            fileInputStream = new FileInputStream(file);
-            MultipartFile multipartFile = new MockMultipartFile(file.getName(), fileInputStream);
+            File tempFile = File.createTempFile("temp", "." + fileType);
+            FileUtils.copyURLToFile(new URL(url), tempFile);
+            FileInputStream fileInputStream = new FileInputStream(tempFile);
+            MultipartFile multipartFile = new MockMultipartFile(tempFile.getName(), fileInputStream);
             String ossUrl = aliOSSUtils.upload(multipartFile);
-            file.delete();
+            tempFile.delete();
             return ossUrl;
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
-
 
 
 }
