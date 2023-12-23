@@ -40,7 +40,7 @@ public class OpenAiUtils{
     /**
      * api密匙
      */
-     String apiKey = "GUESS";
+     String apiKey = "GUESS1";
 
     public  String chat(String txt, String history) {
         Map<String, Object> paramMap = new HashMap<>();
